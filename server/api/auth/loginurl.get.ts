@@ -1,7 +1,7 @@
 const AUTHORIZE_URL = "https://discord.com/api/oauth2/authorize";
 // const TOKEN_URL = "https://discord.com/api/oauth2/token";
 // const REVOKATION_URL = "https://discord.com/api/oauth2/token/revoke";
-const OAUTH_SCOPES = "identify";
+const OAUTH_SCOPES = "identify guilds";
 
 export default defineEventHandler((e) => {
 	const config = useRuntimeConfig();

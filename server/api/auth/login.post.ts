@@ -1,3 +1,7 @@
+import * as DiscordTypes from "@/scripts/DiscordTypes";
+import User from "@/server/models/User";
+import { FetchError } from "ohmyfetch";
+import useDbPool from "~~/server/utils/useDbPool";
 const TOKEN_URL = "https://discord.com/api/oauth2/token";
 
 interface TokenResponse {
@@ -11,7 +15,7 @@ interface TokenResponse {
 export default defineEventHandler(async (e) => {
 	const body = await useBody(e);
 	if (!body.code) {
-		return createError({
+		throw createError({
 			statusCode: 400,
 			message: "missing code in request body",
 		});
@@ -34,12 +38,45 @@ export default defineEventHandler(async (e) => {
 			},
 		});
 	} catch (e: unknown) {
-		console.log(e);
-		return createError({
-			statusCode: 401,
+		if (e instanceof FetchError && e.message.startsWith("4")) {
+			throw createError({
+				statusCode: 401,
+			});
+		}
+		console.error(e);
+		throw createError({
+			statusCode: 500,
 			message: "failed to get token",
 		});
 	}
+
+	// Create profile if not exists, and store token
+	let profile: DiscordTypes.User;
+	try {
+		profile = await $fetch("https://discord.com/api/v10/users/@me", {
+			headers: {
+				Authorization: `Bearer ${r.access_token}`,
+			},
+		});
+	} catch (e) {
+		throw createError({
+			statusCode: 500,
+		});
+	}
+	const pool = await useDbPool(e);
+	let user = await User.fromId(pool, profile.id);
+	if (!user) {
+		user = (await User.create(
+			pool,
+			profile.id,
+			profile.username,
+			profile.avatar
+		)) as User;
+	}
+	const now = new Date();
+	now.setSeconds(now.getSeconds() + r.expires_in);
+	await user.addToken(pool, r.access_token, now);
+
 	return {
 		token: r.access_token,
 		expiresIn: r.expires_in,

@@ -3,25 +3,14 @@
 		<p class="text-body-1">
 			{{ text }}
 		</p>
-		<v-row v-if="loaded">
-			<v-col cols="6" class="d-flex flex-column">
-				<v-img :src="imageUrl"> </v-img>
-				<div>
-					<h2 class="text-h3">
-						Signed in as <strong>{{ username }}</strong>
-					</h2>
-				</div>
-			</v-col>
-		</v-row>
 	</v-container>
 </template>
 
 <script lang="ts" setup>
+import { useLocalLogin } from "~~/composables/useLocalLogin";
+
 let text = ref("Signed in, redirecting...");
 const route = useRoute();
-const loaded = ref(false);
-const imageUrl = ref("");
-const username = ref("");
 
 onMounted(async () => {
 	if (!route.query["code"]) {
@@ -41,19 +30,14 @@ onMounted(async () => {
 		text.value = e.text;
 		return;
 	}
-	const body: User = await $fetch("https://discord.com/api/v10/users/@me", {
-		headers: {
-			Authorization: `Bearer ${r.token}`,
-		},
-	});
+	const localLogin = useLocalLogin();
 	const localLoginCookie = useCookie("token", {
 		maxAge: r.expiresIn,
 		sameSite: "lax",
 	});
 	localLoginCookie.value = r.token;
-	text.value = "";
-	imageUrl.value = `https://cdn.discordapp.com/avatars/${body.id}/${body.avatar}.png`;
-	username.value = body.username;
-	loaded.value = true;
+	localLogin.value = r.token;
+	text.value = "Signed in, redirecting...";
+	await navigateTo("/");
 });
 </script>

@@ -10,14 +10,28 @@
 			<v-tab to="/about"> About </v-tab>
 		</v-tabs>
 		<v-spacer />
-		<v-btn :href="loginUrl"> Login </v-btn>
+		<span v-if="signedIn" class="d-flex flex-row align-center">
+			{{ profile.data.value.username }}
+			<v-avatar class="ml-3">
+				<v-img :src="profile.data.value.avatarUrl" alt="Profile picture" />
+			</v-avatar>
+		</span>
+		<v-btn v-else :href="loginUrl"> Login </v-btn>
 	</v-app-bar>
 </template>
 
 <script lang="ts" setup>
 import { mdiGlobeModel } from "@mdi/js";
 
+let localLogin = useLocalLogin();
+let profile = await useProfile();
+
 let loginUrl = ref("");
+const signedIn = computed(
+	() => localLogin.value.length > 0 && !profile.pending.value
+);
 const navIcon = mdiGlobeModel;
-loginUrl.value = await (await $fetch("/api/auth/loginurl")).url;
+if (!signedIn.value) {
+	loginUrl.value = (await $fetch("/api/auth/loginurl")).url;
+}
 </script>
