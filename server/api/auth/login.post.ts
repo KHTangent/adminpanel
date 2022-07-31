@@ -53,7 +53,7 @@ export default defineEventHandler(async (e) => {
 	// Create profile if not exists, and store token
 	let profile: DiscordTypes.User;
 	try {
-		profile = await $fetch("https://discord.com/api/v10/users/@me", {
+		profile = await $fetch(DiscordTypes.API_URL + "/users/@me", {
 			headers: {
 				Authorization: `Bearer ${r.access_token}`,
 			},

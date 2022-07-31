@@ -8,6 +8,7 @@
 		<v-tabs>
 			<v-tab to="/"> Home </v-tab>
 			<v-tab to="/about"> About </v-tab>
+			<v-tab v-if="signedIn" to="/servers"> Servers </v-tab>
 		</v-tabs>
 		<v-spacer />
 		<span v-if="signedIn" class="d-flex flex-row align-center">

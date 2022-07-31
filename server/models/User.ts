@@ -12,11 +12,13 @@ export default class User {
 	id: string;
 	username: string;
 	avatar: string;
+	private token: string;
 
 	private constructor(id: string, username: string, avatar: string) {
 		this.id = id;
 		this.username = username;
 		this.avatar = avatar;
+		this.token = "";
 	}
 
 	static async create(
@@ -83,7 +85,9 @@ export default class User {
 			return null;
 		}
 		const foundUser = result.rows[0] as DbUser;
-		return new User(foundUser.id, foundUser.username, foundUser.avatar);
+		const user = new User(foundUser.id, foundUser.username, foundUser.avatar);
+		user.storeToken(token);
+		return user;
 	}
 
 	async addToken(pool: pg.Pool, token: string, expires: Date) {
@@ -95,6 +99,7 @@ export default class User {
 		};
 		try {
 			await pool.query(query);
+			this.storeToken(token);
 		} catch (e) {
 			if (e instanceof pg.DatabaseError) {
 				if (e.constraint == "user_tokens_pkey") {
@@ -106,6 +111,19 @@ export default class User {
 				statusCode: 500,
 			});
 		}
+	}
+
+	private storeToken(token: string) {
+		this.token = token;
+	}
+
+	getToken(): string {
+		if (this.token.length === 0) {
+			throw createError({
+				statusCode: 401,
+			});
+		}
+		return this.token;
 	}
 
 	getAvatarURL(): string {
