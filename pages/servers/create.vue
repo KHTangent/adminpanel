@@ -14,9 +14,23 @@
 				<strong>{{ server.name }}</strong>
 			</v-banner-text>
 			<template #actions>
-				<v-btn>Create</v-btn>
+				<v-btn @click="setServer(server.id)">Create</v-btn>
 			</template>
 		</v-banner>
+		<ConfirmationDialog
+			v-model="confirmationOpen"
+			title="Create admin panel?"
+			@confirm="createServer"
+			@cancel="selectedServerId = ''"
+		>
+			<p class="text-body-1">
+				Are you sure you want to create a new admin panel for
+				<strong>{{
+					servers.find((e) => e.id === selectedServerId)?.name
+				}}</strong
+				>?
+			</p>
+		</ConfirmationDialog>
 	</v-container>
 </template>
 
@@ -24,4 +38,15 @@
 const servers = await $fetch("/api/servers/available", {
 	headers: useRequestHeaders(["cookie"]),
 });
+
+const selectedServerId = ref("");
+const confirmationOpen = ref(false);
+function setServer(id: string) {
+	selectedServerId.value = id;
+	confirmationOpen.value = true;
+}
+
+async function createServer() {
+	console.log("Create server placeholder");
+}
 </script>
