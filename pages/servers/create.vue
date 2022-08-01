@@ -1,5 +1,15 @@
 <template>
 	<v-container>
+		<v-alert
+			v-if="showAlert"
+			:type="alertMessage.length === 0 ? 'success' : 'error'"
+		>
+			{{
+				alertMessage.length > 0
+					? alertMessage
+					: "Server created! Redirecting..."
+			}}
+		</v-alert>
 		<h1 class="text-h1">Add server</h1>
 		<p>Create a new admin panel for a server you own.</p>
 		<v-banner
@@ -35,6 +45,12 @@
 </template>
 
 <script setup lang="ts">
+import { FetchError } from "ohmyfetch";
+import { delay } from "~~/scripts/Tools.js";
+
+const showAlert = ref(false);
+const alertMessage = ref("");
+
 const servers = await $fetch("/api/servers/available", {
 	headers: useRequestHeaders(["cookie"]),
 });
@@ -47,6 +63,25 @@ function setServer(id: string) {
 }
 
 async function createServer() {
-	console.log("Create server placeholder");
+	try {
+		await $fetch("/api/servers/create", {
+			method: "POST",
+			body: {
+				id: selectedServerId.value,
+			},
+		});
+	} catch (e) {
+		showAlert.value = true;
+		if (e instanceof FetchError) {
+			alertMessage.value = e.message;
+		} else {
+			alertMessage.value = e.message;
+		}
+		return;
+	}
+	showAlert.value = true;
+	alertMessage.value = "";
+	await delay(2000);
+	await navigateTo("/servers");
 }
 </script>

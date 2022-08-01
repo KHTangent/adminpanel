@@ -3,3 +3,10 @@ export interface Profile {
 	username: string;
 	avatarUrl: string;
 }
+
+export interface Server {
+	id: string;
+	name: string;
+	ownerId: string;
+	iconUrl: string;
+}

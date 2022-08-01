@@ -25,8 +25,9 @@ export default class User {
 		pool: pg.Pool,
 		id: string,
 		username: string,
-		avatar: string
+		avatar: string | null
 	): Promise<User | null> {
+		if (!avatar) avatar = "";
 		const query = {
 			text:
 				"INSERT INTO users (id, username, avatar) " +
