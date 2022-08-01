@@ -1,54 +1,22 @@
-# Nuxt 3 and Vuetify starter
+# AdminPanel (WIP)
 
-Personal starter for projects with Nuxt 3 and Vuetify 3. Feel free to use it, but I take no responsibility if anything goes wrong.
-
-## What's included
-
-- Nuxt 3 starter
-- Vuetify 3 with Nuxt plugin (credit: [Cody Bontecou](https://codybontecou.com/how-to-use-vuetify-with-nuxt-3.html#configure-nuxt-3-to-use-our-new-plugin))
-- `@mdi/js` SVG icon pack
-- Prettier, with a Husky pre-commit hook
-- Make Prettier use tabs for indentation
-- Pre-made header and footer
-- Default layout to include the header and footer
-- Two pages, to test navigation
-- Simple Dockerfile, should it be needed
+Tool for Discord admins and moderators to keep track of bans, warning, and other stuff about members. Not at all usable yet, barely anything is implemented.
 
 ## Setup
 
-Make sure to install the dependencies:
+Install Node.js and PostgreSQL (CockroachDB should also work, but I haven't tested). Clone the repo.
+Create your Postgres database ([detailed instructions can be found in my FjordBot repo](https://github.com/KHTangent/FjordFursBot)). Create a new OAuth2 application on the Discord developer portal, and retrieve the client ID and secret. Add your hostname with `/authcallback` as an allowed redirect URI, such as `http://localhost:3000/authcallback`.
+
+Create a .env file in the project root, and fill out the following fields:
 
 ```bash
-# yarn
-yarn install
-
-# npm
-npm install
-
-# pnpm
-pnpm install --shamefully-hoist
+NUXT_DISCORD_CLIENT_ID=clientid
+NUXT_DISCORD_CLIENT_SECRET=clientsecret
+NUXT_DISCORD_REDIRECT_URI="http://localhost:3000/authcallback"
+PGUSER=postgresusername
+PGPASSWORD=postgrespassword
+PGHOST=localhost
+PGDATABASE=adminpanel
 ```
 
-## Development Server
-
-Start the development server on http://localhost:3000
-
-```bash
-npm run dev
-```
-
-Note: Completion in VS Code with Volar will not work unless you've ran the dev server at least once.
-
-## Production
-
-Build the application for production:
-
-```bash
-npm run build
-```
-
-Locally preview production build:
-
-```bash
-npm run preview
-```
+Run database migrations with `npm run migrate up`. Start the adminpanel with `npm run start`
