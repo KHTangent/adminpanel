@@ -15,6 +15,9 @@
 					</v-btn>
 				</div>
 			</v-col>
+			<v-col cols="12" md="6" v-for="(server, i) in servers" :key="i">
+				<ServerCard :server="server" />
+			</v-col>
 		</v-row>
 	</v-container>
 </template>
@@ -25,4 +28,8 @@ import { mdiPlus } from "@mdi/js";
 const icons = {
 	mdiPlus,
 };
+
+const servers = await $fetch("/api/servers/list", {
+	headers: useRequestHeaders(["cookie"]),
+});
 </script>
