@@ -16,8 +16,14 @@
 </template>
 
 <script setup lang="ts">
+import { PropType } from "vue";
+import * as APTypes from "@/scripts/APTypes";
+
 const props = defineProps({
-	server: Object,
+	server: {
+		type: Object as PropType<APTypes.Server>,
+		required: true,
+	},
 });
 const serverUrl = computed(() => `/panel/${props.server.id}`);
 </script>
