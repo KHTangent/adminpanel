@@ -1,10 +1,51 @@
 <template>
 	<v-container>
-		<div class="d-flex flex-row align-center ma-4">
-			<v-avatar :image="server.iconUrl" class="mx-2" />
+		<div class="d-flex flex-row align-center ma-2">
+			<v-avatar :image="server.iconUrl" class="mr-2" />
 			<h1 class="text-h3">{{ server.name }}</h1>
 		</div>
-		<p class="text-body-1">Manage server</p>
+		<v-expansion-panels
+			class="my-6"
+			multiple
+			variant="accordion"
+			v-model="openedPanels"
+		>
+			<v-expansion-panel title="Expired notes" :value="0">
+				<v-expansion-panel-text>
+					<p>
+						Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ducimus
+						tempora ea vel porro inventore facere enim aspernatur velit commodi
+						vero ipsam laboriosam laborum ullam nobis obcaecati, cumque, earum
+						animi? Nisi!
+					</p>
+				</v-expansion-panel-text>
+			</v-expansion-panel>
+			<v-expansion-panel title="Expiring notes" :value="1">
+				<v-expansion-panel-text>
+					<p>
+						Lorem ipsum dolor sit amet consectetur, adipisicing elit. Ex nisi
+						eum maiores labore consequatur, harum similique rerum facilis quos
+						pariatur sed maxime earum id aperiam non quidem dolore saepe atque!
+					</p>
+				</v-expansion-panel-text>
+			</v-expansion-panel>
+			<v-expansion-panel title="Members" :value="2">
+				<v-expansion-panel-text>
+					<MemberCard :member="profile.data.value" />
+					<MemberCard :member="profile.data.value" />
+					<MemberCard :member="profile.data.value" />
+				</v-expansion-panel-text>
+			</v-expansion-panel>
+			<v-expansion-panel title="Server settings" :value="3">
+				<v-expansion-panel-text>
+					<p>
+						Lorem ipsum dolor sit amet consectetur, adipisicing elit. Ex nisi
+						eum maiores labore consequatur, harum similique rerum facilis quos
+						pariatur sed maxime earum id aperiam non quidem dolore saepe atque!
+					</p>
+				</v-expansion-panel-text>
+			</v-expansion-panel>
+		</v-expansion-panels>
 	</v-container>
 </template>
 
@@ -20,4 +61,6 @@ try {
 } catch (e) {
 	await navigateTo("/");
 }
+const profile = await useProfile();
+const openedPanels = ref([0]);
 </script>
