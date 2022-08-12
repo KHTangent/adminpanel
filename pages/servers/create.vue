@@ -81,6 +81,9 @@ async function createServer() {
 	}
 	showAlert.value = true;
 	alertMessage.value = "";
+	scrollTo({
+		top: 0,
+	});
 	await delay(2000);
 	await navigateTo("/servers");
 }
