@@ -4,6 +4,11 @@ export interface Profile {
 	avatarUrl: string;
 }
 
+export interface Member {
+	serverId: string;
+	profile: Profile;
+}
+
 export interface Server {
 	id: string;
 	name: string;

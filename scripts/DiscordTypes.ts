@@ -14,6 +14,18 @@ export interface User {
 	public_flags: number;
 }
 
+export interface PublicUser {
+	id: string;
+	username: string;
+	avatar?: string;
+	avatar_decoration?: string;
+	discriminator: string;
+	public_flags: number;
+	banner?: string;
+	banner_color: string;
+	accent_color: number;
+}
+
 export interface GuildPreview {
 	id: string;
 	name: string;
