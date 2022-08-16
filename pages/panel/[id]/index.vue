@@ -31,9 +31,11 @@
 			</v-expansion-panel>
 			<v-expansion-panel title="Members" :value="2">
 				<v-expansion-panel-text>
-					<MemberCard :member="profile.data.value" />
-					<MemberCard :member="profile.data.value" />
-					<MemberCard :member="profile.data.value" />
+					<MemberCard
+						v-for="(member, i) in members"
+						:key="i"
+						:member="member.profile"
+					/>
 				</v-expansion-panel-text>
 			</v-expansion-panel>
 			<v-expansion-panel title="Server settings" :value="3">
@@ -51,6 +53,7 @@
 
 <script setup lang="ts">
 import * as APTypes from "@/scripts/APTypes";
+import { dataToEsm } from "@rollup/pluginutils";
 
 const route = useRoute();
 let server: APTypes.Server;
@@ -61,6 +64,11 @@ try {
 } catch (e) {
 	await navigateTo("/");
 }
-const profile = await useProfile();
-const openedPanels = ref([0]);
+const openedPanels = ref([0]); // Open the first panel by default
+
+const { data: members, refresh: reloadMembers } = await useFetch<
+	APTypes.Member[]
+>(`/api/server/${server.id}/members`, {
+	headers: useRequestHeaders(["cookie"]),
+});
 </script>
