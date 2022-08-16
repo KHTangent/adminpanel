@@ -9,5 +9,6 @@ export default defineNuxtConfig({
 		discordClientId: "",
 		discordClientSecret: "",
 		discordRedirectUri: "",
+		discordBotToken: "",
 	},
 });
