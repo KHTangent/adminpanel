@@ -31,6 +31,25 @@
 			</v-expansion-panel>
 			<v-expansion-panel title="Members" :value="2">
 				<v-expansion-panel-text>
+					<v-text-field
+						class="my-2"
+						:error="addMemberError.length !== 0"
+						:error-messages="addMemberError"
+						placeholder="Add member by ID"
+						hint="Find the user ID by right-clicking a user while developer mode is active"
+						v-model="addMemberId"
+					>
+						<template #append>
+							<v-btn
+								:prepend-icon="icons.mdiPlus"
+								color="success"
+								class="mt-n2"
+								@click="addMember()"
+							>
+								Add
+							</v-btn>
+						</template>
+					</v-text-field>
 					<MemberCard
 						v-for="(member, i) in members"
 						:key="i"
@@ -52,8 +71,10 @@
 </template>
 
 <script setup lang="ts">
+import { mdiPlus } from "@mdi/js";
 import * as APTypes from "@/scripts/APTypes";
-import { dataToEsm } from "@rollup/pluginutils";
+import { FetchError } from "ohmyfetch";
+const icons = { mdiPlus };
 
 const route = useRoute();
 let server: APTypes.Server;
@@ -71,4 +92,30 @@ const { data: members, refresh: reloadMembers } = await useFetch<
 >(`/api/server/${server.id}/members`, {
 	headers: useRequestHeaders(["cookie"]),
 });
+const addMemberId = ref("");
+const addMemberError = ref("");
+async function addMember() {
+	if (addMemberId.value.length === 0) {
+		addMemberError.value = "Missing Member ID";
+		return;
+	}
+	if (!/^\d+$/.test(addMemberId.value)) {
+		addMemberError.value = "Member ID may only contain digits";
+		return;
+	}
+	try {
+		await $fetch(`/api/server/${server.id}/member/${addMemberId.value}`, {
+			method: "POST",
+			headers: useRequestHeaders(["cookie"]),
+		});
+	} catch (e: unknown) {
+		if (e instanceof FetchError) {
+			addMemberError.value = e.message;
+		}
+		return;
+	}
+	addMemberId.value = "";
+	addMemberError.value = "";
+	await reloadMembers();
+}
 </script>
