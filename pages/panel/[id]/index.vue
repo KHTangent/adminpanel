@@ -55,6 +55,9 @@
 						:key="i"
 						:member="member.profile"
 					/>
+					<p v-if="members.length === 0" class="text-caption">
+						No members have been added to this server yet.
+					</p>
 				</v-expansion-panel-text>
 			</v-expansion-panel>
 			<v-expansion-panel title="Server settings" :value="3">
