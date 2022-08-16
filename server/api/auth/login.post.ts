@@ -69,7 +69,7 @@ export default defineEventHandler(async (e) => {
 		user = (await User.create(
 			pool,
 			profile.id,
-			profile.username,
+			profile.username + "#" + profile.discriminator,
 			profile.avatar
 		)) as User;
 	}
