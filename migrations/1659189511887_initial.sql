@@ -44,7 +44,7 @@ CREATE TABLE member_notes (
 	note_type VARCHAR(20) NOT NULL DEFAULT 'note',
 	body TEXT,
 	created_at TIMESTAMP NOT NULL DEFAULT NOW(),
-	created_by BIGINT REFERENCES servers(id) ON DELETE SET NULL,
+	created_by BIGINT REFERENCES users(id) ON DELETE SET NULL,
 	resolved BOOLEAN NOT NULL DEFAULT false,
 	expires TIMESTAMP
 );

@@ -1,6 +1,6 @@
 # AdminPanel (WIP)
 
-Tool for Discord admins and moderators to keep track of bans, warning, and other stuff about members. Not at all usable yet, barely anything is implemented.
+Tool for Discord admins and moderators to keep track of bans, warning, and other stuff about members. Not at all usable yet, barely anything is implemented. Also, database migrations are not stable before the initial version is ready, so if you try to run this your database may break at random times.
 
 ## Setup
 
