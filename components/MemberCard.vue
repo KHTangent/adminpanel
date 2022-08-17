@@ -10,8 +10,7 @@
 				</v-card-title>
 				<v-card-text> User ID: {{ member.id }} </v-card-text>
 				<v-card-actions class="justify-end">
-					<v-btn> Refresh </v-btn>
-					<v-btn> Add note </v-btn>
+					<v-btn @click="$emit('open')"> Manage </v-btn>
 				</v-card-actions>
 			</div>
 		</div>
@@ -28,4 +27,5 @@ defineProps({
 		required: true,
 	},
 });
+defineEmits(["open"]);
 </script>

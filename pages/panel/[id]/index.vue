@@ -54,10 +54,16 @@
 						v-for="(member, i) in members"
 						:key="i"
 						:member="member.profile"
+						@open="viewMember(i)"
 					/>
 					<p v-if="members.length === 0" class="text-caption">
 						No members have been added to this server yet.
 					</p>
+					<MemberDialog
+						v-model="memberDialogOpen"
+						:serverId="server.id"
+						:memberId="memberDialogMember"
+					/>
 				</v-expansion-panel-text>
 			</v-expansion-panel>
 			<v-expansion-panel title="Server settings" :value="3">
@@ -120,5 +126,12 @@ async function addMember() {
 	addMemberId.value = "";
 	addMemberError.value = "";
 	await reloadMembers();
+}
+
+const memberDialogOpen = ref(false);
+const memberDialogMember = ref("");
+function viewMember(index: number) {
+	memberDialogMember.value = members.value[index].profile.id;
+	memberDialogOpen.value = true;
 }
 </script>
