@@ -15,3 +15,10 @@ export interface Server {
 	ownerId: string;
 	iconUrl: string;
 }
+
+export enum NoteType {
+	NOTE = "note",
+	WARNING = "warning",
+	MUTE = "mute",
+	BAN = "ban",
+}

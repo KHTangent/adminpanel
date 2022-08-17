@@ -1,6 +1,7 @@
 import { createError } from "h3";
 import pg from "pg";
 import * as APTypes from "@/scripts/APTypes";
+import Note from "@/server/models/Note";
 
 interface DbMember {
 	server_id: string;
@@ -88,6 +89,32 @@ export default class Member {
 		return result.rows.map(
 			(r: DbMember) => new Member(r.user_id, r.server_id, r.username, r.avatar)
 		);
+	}
+
+	async addNote(
+		pool: pg.Pool,
+		title: string,
+		type: APTypes.NoteType,
+		body: string,
+		createdBy: string,
+		resolved = false,
+		expires?: Date
+	): Promise<Note> {
+		return await Note.create(
+			pool,
+			this.serverId,
+			this.userId,
+			title,
+			type,
+			body,
+			createdBy,
+			resolved,
+			expires
+		);
+	}
+
+	async getNotes(pool: pg.Pool): Promise<Note[]> {
+		return await Note.findAll(pool, this.serverId, this.userId);
 	}
 
 	getAvatarURL(): string {
