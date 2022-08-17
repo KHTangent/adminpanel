@@ -191,7 +191,7 @@ export default class Note {
 		this.resolved = true;
 	}
 
-	toFullNote() {
+	toFullNote(): APTypes.Note {
 		return {
 			noteId: this.noteId,
 			serverId: this.serverId,

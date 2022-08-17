@@ -7,6 +7,7 @@ export default defineEventHandler(async (e) => {
 	const user = await useLogin(e);
 	const pool = await useDbPool(e);
 	const serverId = e.context.params.sid as string;
+	const memberId = e.context.params.mid as string;
 
 	// Check existance of server, and permissions
 	const server = await Server.fromId(pool, serverId);
@@ -24,6 +25,12 @@ export default defineEventHandler(async (e) => {
 		});
 	}
 
-	const members = await Member.getAll(pool, serverId);
-	return members.map((e) => e.toMemberSummary());
+	const member = await Member.get(pool, server.id, memberId);
+	if (!member) {
+		throw createError({
+			statusCode: 404,
+			statusMessage: "Member not found in server",
+		});
+	}
+	return await member.toFullMember(pool);
 });

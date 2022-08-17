@@ -4,9 +4,28 @@ export interface Profile {
 	avatarUrl: string;
 }
 
-export interface Member {
+export interface MemberSummary {
 	serverId: string;
 	profile: Profile;
+}
+
+export interface Note {
+	noteId: string;
+	serverId: string;
+	userId: string;
+	title: string;
+	noteType: NoteType;
+	body: string;
+	createdAt: Date;
+	createdBy: string;
+	resolved: boolean;
+	expires: Date | null;
+}
+
+export interface MemberWithNotes {
+	serverId: string;
+	profile: Profile;
+	notes: Note[];
 }
 
 export interface Server {

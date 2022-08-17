@@ -91,6 +91,28 @@ export default class Member {
 		);
 	}
 
+	static async get(
+		pool: pg.Pool,
+		serverId: string,
+		userId: string
+	): Promise<Member | null> {
+		const query = {
+			text: "SELECT * FROM server_members WHERE server_id = $1 AND user_id = $2",
+			values: [serverId, userId],
+		};
+		const result = await pool.query(query);
+		if (result.rowCount < 1) {
+			return null;
+		}
+		const member = result.rows[0] as DbMember;
+		return new Member(
+			member.user_id,
+			member.server_id,
+			member.username,
+			member.avatar
+		);
+	}
+
 	async addNote(
 		pool: pg.Pool,
 		title: string,
@@ -126,7 +148,7 @@ export default class Member {
 		}
 	}
 
-	toFullMember(): APTypes.Member {
+	toMemberSummary(): APTypes.MemberSummary {
 		return {
 			serverId: this.serverId,
 			profile: {
@@ -134,6 +156,19 @@ export default class Member {
 				id: this.userId,
 				username: this.username,
 			},
+		};
+	}
+
+	async toFullMember(pool: pg.Pool): Promise<APTypes.MemberWithNotes> {
+		const notes = await this.getNotes(pool);
+		return {
+			serverId: this.serverId,
+			profile: {
+				avatarUrl: this.getAvatarURL(),
+				id: this.userId,
+				username: this.username,
+			},
+			notes: notes.map((e) => e.toFullNote()),
 		};
 	}
 }

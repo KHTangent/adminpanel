@@ -91,7 +91,7 @@ try {
 const openedPanels = ref([0]); // Open the first panel by default
 
 const { data: members, refresh: reloadMembers } = await useFetch<
-	APTypes.Member[]
+	APTypes.MemberSummary[]
 >(`/api/server/${server.id}/members`, {
 	headers: useRequestHeaders(["cookie"]),
 });
