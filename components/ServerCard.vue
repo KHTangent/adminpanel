@@ -25,5 +25,5 @@ const props = defineProps({
 		required: true,
 	},
 });
-const serverUrl = computed(() => `/panel/${props.server.id}`);
+const serverUrl = computed(() => `/servers/panel/${props.server.id}`);
 </script>
