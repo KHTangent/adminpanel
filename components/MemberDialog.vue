@@ -1,5 +1,5 @@
 <template>
-	<v-dialog max-width="1280px" v-model="modelValue">
+	<v-dialog max-width="1280px" v-model="modelValue" @click:outside="close()">
 		<v-card v-if="member">
 			<v-card-title>
 				<v-avatar>
