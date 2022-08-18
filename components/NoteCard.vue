@@ -2,7 +2,7 @@
 	<v-card class="ma-2">
 		<v-card-title class="d-flex flex-row align-center justify-space-between">
 			{{ note.title }}
-			<v-chip :color="chipColor" class="ml-4">
+			<v-chip :color="getChipColor(note.noteType)" class="ml-4">
 				{{ note.noteType }}
 			</v-chip>
 		</v-card-title>
@@ -38,6 +38,8 @@
 <script setup lang="ts">
 import { PropType } from "vue";
 import * as APTypes from "@/scripts/APTypes";
+import { getNoteTypeColor } from "@/scripts/Tools";
+
 const props = defineProps({
 	note: {
 		type: Object as PropType<APTypes.Note>,
@@ -48,20 +50,9 @@ const props = defineProps({
 const { data: profile } = await useProfile();
 
 // Ugly code because JSON does not support date type, so this is actually a string
-const createdAt = computed(
-	() => new Date(props.note.createdAt as unknown as string)
-);
+const createdAt = computed(() => new Date(props.note.createdAt.toString()));
 
-const chipColor = computed(() => {
-	switch (props.note.noteType) {
-		case APTypes.NoteType.BAN:
-			return "red-lighten-1";
-		case APTypes.NoteType.WARNING:
-			return "orange";
-		case APTypes.NoteType.MUTE:
-			return "yellow";
-		default:
-			return "green";
-	}
-});
+function getChipColor(type: APTypes.NoteType): string {
+	return getNoteTypeColor(type);
+}
 </script>
