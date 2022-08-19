@@ -30,7 +30,11 @@
 									<v-select :items="noteTypeOptions" v-model="addNoteType" />
 								</v-col>
 								<v-col cols="12">
-									<v-textarea v-model="addNoteBody" label="Note contents" />
+									<v-textarea
+										v-model="addNoteBody"
+										label="Note contents"
+										:error-messages="addNoteGeneralError"
+									/>
 								</v-col>
 							</v-row>
 							<v-row>
@@ -67,6 +71,7 @@
 <script setup lang="ts">
 import * as APTypes from "@/scripts/APTypes";
 import { validateDate } from "@/scripts/Tools";
+import { FetchError } from "ohmyfetch";
 
 const props = defineProps({
 	modelValue: {
@@ -86,7 +91,7 @@ const emit = defineEmits(["update:modelValue"]);
 function close() {
 	emit("update:modelValue", false);
 }
-const { data: member } = await useAsyncData<APTypes.MemberWithNotes>(
+const { data: member, refresh } = await useAsyncData<APTypes.MemberWithNotes>(
 	() => {
 		if (props.memberId.length === 0 || props.serverId.length === 0) return null;
 		return $fetch<APTypes.MemberWithNotes>(
@@ -116,6 +121,7 @@ const addNoteBody = ref("");
 const addNoteExpires = ref(false);
 const addNoteExpirityDate = ref("");
 const addNoteExpirityDateError = ref("");
+const addNoteGeneralError = ref("");
 
 async function submitNewNote() {
 	if (addNoteTitle.value.trim().length === 0) {
@@ -129,6 +135,32 @@ async function submitNewNote() {
 			return;
 		}
 	}
-	// TODO: Actually submit note
+	const newNoteBody: APTypes.CreateNoteRequest = {
+		body: addNoteBody.value,
+		expires: addNoteExpires.value ? addNoteExpirityDate.value : undefined,
+		noteType: addNoteType.value as APTypes.NoteType,
+		title: addNoteTitle.value,
+	};
+	try {
+		await $fetch(`/api/server/${props.serverId}/note/${props.memberId}`, {
+			method: "POST",
+			body: newNoteBody,
+		});
+		addNoteType.value = "note";
+		addNoteTitle.value = "";
+		addNoteTitleError.value = "";
+		addNoteBody.value = "";
+		addNoteExpires.value = false;
+		addNoteExpirityDate.value = "";
+		addNoteExpirityDateError.value = "";
+		addNoteGeneralError.value = "";
+		await refresh();
+	} catch (e: unknown) {
+		if (e instanceof FetchError) {
+			addNoteGeneralError.value = e.message;
+		} else {
+			addNoteGeneralError.value = "Something went wrong while adding note";
+		}
+	}
 }
 </script>

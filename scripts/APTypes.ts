@@ -28,6 +28,13 @@ export interface MemberWithNotes {
 	notes: Note[];
 }
 
+export interface CreateNoteRequest {
+	title: string;
+	noteType: NoteType;
+	body: string;
+	expires?: string;
+}
+
 export interface Server {
 	id: string;
 	name: string;
