@@ -1,11 +1,18 @@
 <template>
 	<v-dialog :fullscreen="useDisplay().mobile.value" @click:outside="close()">
 		<v-card v-if="member" :width="dialogWidth">
-			<v-card-title>
-				<v-avatar>
-					<v-img :src="member.profile.avatarUrl" />
-				</v-avatar>
-				{{ member.profile.username }}
+			<v-card-title class="d-flex flex-row justify-space-between">
+				<div>
+					<v-avatar>
+						<v-img :src="member.profile.avatarUrl" />
+					</v-avatar>
+					{{ member.profile.username }}
+				</div>
+				<div>
+					<v-btn icon @click="close()">
+						<v-icon>{{ icons.mdiClose }}</v-icon>
+					</v-btn>
+				</div>
 			</v-card-title>
 			<v-card-text>
 				<p class="text-caption">User ID: {{ member.profile.id }}</p>
@@ -70,9 +77,12 @@
 
 <script setup lang="ts">
 import * as APTypes from "@/scripts/APTypes";
+import { mdiClose } from "@mdi/js";
 import { validateDate } from "@/scripts/Tools";
 import { FetchError } from "ohmyfetch";
 import { useDisplay } from "vuetify";
+
+const icons = { mdiClose };
 
 const props = defineProps({
 	memberId: {
