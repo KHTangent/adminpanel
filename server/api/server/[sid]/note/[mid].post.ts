@@ -25,12 +25,15 @@ export default defineEventHandler(async (e) => {
 			statusMessage: "Invalid note type",
 		});
 	}
-	const dateError = validateDate(body.expires);
-	if (body.expires && dateError.length !== 0) {
-		throw createError({
-			statusCode: 400,
-			statusMessage: "Invalid expirity date: " + dateError,
-		});
+	const hasExpiryDate = !!(body.expires && body.expires.length !== 0);
+	if (hasExpiryDate) {
+		const dateError = validateDate(body.expires);
+		if (dateError.length !== 0) {
+			throw createError({
+				statusCode: 400,
+				statusMessage: "Invalid expirity date: " + dateError,
+			});
+		}
 	}
 
 	// Check existance of server, and permissions
@@ -55,13 +58,20 @@ export default defineEventHandler(async (e) => {
 			statusMessage: "Member not found in server",
 		});
 	}
+	let expiryDate: Date;
+	if (hasExpiryDate) {
+		// We know this is valid, because we've already checked the input structure
+		const [day, month, year] = body.expires.split("-").map((e) => parseInt(e));
+		expiryDate = new Date(year, month - 1, day);
+	}
 	const note = await member.addNote(
 		pool,
 		body.title,
 		body.noteType,
 		body.body,
 		user.id,
-		false
+		hasExpiryDate,
+		expiryDate
 	);
 	return note.toFullNote();
 });
