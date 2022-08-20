@@ -1,9 +1,5 @@
 <template>
-	<v-dialog
-		v-model="modelValue"
-		:fullscreen="useDisplay().mobile.value"
-		@click:outside="close()"
-	>
+	<v-dialog :fullscreen="useDisplay().mobile.value" @click:outside="close()">
 		<v-card v-if="member" :width="dialogWidth">
 			<v-card-title>
 				<v-avatar>
@@ -79,10 +75,6 @@ import { FetchError } from "ohmyfetch";
 import { useDisplay } from "vuetify";
 
 const props = defineProps({
-	modelValue: {
-		default: false,
-		type: Boolean,
-	},
 	memberId: {
 		type: String,
 		required: true,
