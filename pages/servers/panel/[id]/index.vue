@@ -101,6 +101,15 @@ const { data: members, refresh: reloadMembers } = await useFetch<
 >(`/api/server/${server.id}/members`, {
 	headers: useRequestHeaders(["cookie"]),
 });
+
+const userCache = useUserCache();
+for (const member of members.value) {
+	userCache.value[member.profile.id] = {
+		avatarUrl: member.profile.avatarUrl,
+		username: member.profile.username,
+	};
+}
+
 const addMemberId = ref("");
 const addMemberError = ref("");
 async function addMember() {
@@ -123,9 +132,17 @@ async function addMember() {
 		}
 		return;
 	}
+	const temp = addMemberId.value;
 	addMemberId.value = "";
 	addMemberError.value = "";
 	await reloadMembers();
+	const member = members.value.find((e) => e.profile.id === temp);
+	if (member) {
+		userCache.value[member.profile.id] = {
+			avatarUrl: member.profile.avatarUrl,
+			username: member.profile.username,
+		};
+	}
 }
 
 const memberDialogOpen = ref(false);

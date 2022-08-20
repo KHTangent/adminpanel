@@ -24,13 +24,20 @@
 <script lang="ts" setup>
 import { mdiGlobeModel } from "@mdi/js";
 
-let localLogin = useLocalLogin();
-let profile = await useProfile();
+const localLogin = useLocalLogin();
+const profile = await useProfile();
 
-let loginUrl = ref("");
+const loginUrl = ref("");
 const signedIn = computed(
 	() => localLogin.value.length > 0 && !profile.pending.value
 );
+if (signedIn.value) {
+	const cache = useUserCache();
+	cache.value[profile.data.value.id] = {
+		avatarUrl: profile.data.value.avatarUrl,
+		username: profile.data.value.username,
+	};
+}
 const navIcon = mdiGlobeModel;
 if (!signedIn.value) {
 	loginUrl.value = (await $fetch("/api/auth/loginurl")).url;
