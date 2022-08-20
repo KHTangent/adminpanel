@@ -1,6 +1,10 @@
 <template>
-	<v-dialog max-width="1280px" v-model="modelValue" @click:outside="close()">
-		<v-card v-if="member">
+	<v-dialog
+		v-model="modelValue"
+		:fullscreen="useDisplay().mobile.value"
+		@click:outside="close()"
+	>
+		<v-card v-if="member" :width="dialogWidth">
 			<v-card-title>
 				<v-avatar>
 					<v-img :src="member.profile.avatarUrl" />
@@ -72,6 +76,7 @@
 import * as APTypes from "@/scripts/APTypes";
 import { validateDate } from "@/scripts/Tools";
 import { FetchError } from "ohmyfetch";
+import { useDisplay } from "vuetify";
 
 const props = defineProps({
 	modelValue: {
@@ -91,6 +96,14 @@ const emit = defineEmits(["update:modelValue"]);
 function close() {
 	emit("update:modelValue", false);
 }
+
+const dialogWidth = computed(() => {
+	if (useDisplay().mobile.value) return useDisplay().width.value;
+	else {
+		return Math.min(useDisplay().width.value - 200, 1280);
+	}
+});
+
 const { data: member, refresh } = await useAsyncData<APTypes.MemberWithNotes>(
 	() => {
 		if (props.memberId.length === 0 || props.serverId.length === 0) return null;
