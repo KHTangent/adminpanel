@@ -7,27 +7,29 @@
 			</v-chip>
 		</v-card-title>
 		<v-card-text>
-			<div class="d-flex flex-row justify-space-between align-center">
-				<div></div>
+			<div>
+				<span v-if="hasExpirity" class="text-caption">
+					Expires at {{ expires.toLocaleDateString() }}
+				</span>
 			</div>
-			<p class="text-body-1 mb-4">
+			<p class="text-body-1 mb-4 mt-2">
 				{{ note.body }}
 			</p>
-			<div class="d-flex flex-row justify-space-between align-center">
-				<div>
-					<span class="text-caption" :title="createdAt.toLocaleString()">
-						Created at {{ createdAt.toLocaleDateString() }}
-					</span>
-					<span
-						class="text-caption"
-						v-if="profile && profile.id === note.createdBy"
+			<div class="d-flex flex-row justify-start align-center">
+				<span class="text-caption" :title="createdAt.toLocaleString()">
+					Created at {{ createdAt.toLocaleDateString() }}
+				</span>
+				<div class="d-flex flex-row align-center ml-1">
+					<span class="text-caption mr-1"> by </span>
+					<v-avatar
+						v-if="creatorProfile.avatarUrl.length > 0"
+						class="mr-1"
+						:size="24"
 					>
-						<!-- TODO: Make this work for other users as well -->
-						by
-						<v-avatar class="mx-1" :size="24">
-							<v-img :src="profile.avatarUrl" />
-						</v-avatar>
-						{{ profile.username }}
+						<v-img :src="creatorProfile.avatarUrl" />
+					</v-avatar>
+					<span class="text-caption">
+						{{ creatorProfile.username }}
 					</span>
 				</div>
 			</div>
@@ -47,10 +49,26 @@ const props = defineProps({
 	},
 });
 
-const { data: profile } = await useProfile();
+const userCache = useUserCache();
 
 // Ugly code because JSON does not support date type, so this is actually a string
 const createdAt = computed(() => new Date(props.note.createdAt.toString()));
+const expires = computed(() => new Date(props.note.expires.toString()));
+const hasExpirity = computed(
+	() =>
+		!(
+			!props.note.expires ||
+			(props.note.expires as unknown as string).length === 0
+		)
+);
+
+let creatorProfile = userCache.value[props.note.createdBy];
+if (!creatorProfile) {
+	creatorProfile = {
+		avatarUrl: "",
+		username: "unknown",
+	};
+}
 
 function getChipColor(type: APTypes.NoteType): string {
 	return getNoteTypeColor(type);
