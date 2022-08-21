@@ -143,6 +143,10 @@ async function submitNewNote() {
 		addNoteTitleError.value = "Title cannot be empty";
 		return;
 	}
+	if (addNoteBody.value.trim().length === 0) {
+		addNoteGeneralError.value = "Body cannot be empty";
+		return;
+	}
 	if (addNoteExpires.value) {
 		const dateError = validateDate(addNoteExpirityDate.value);
 		addNoteExpirityDateError.value = dateError;
