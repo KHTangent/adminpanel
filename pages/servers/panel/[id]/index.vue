@@ -16,6 +16,7 @@
 						v-for="(note, i) in expiredUnresolvedNotes"
 						:key="i"
 						:note="note"
+						show-member
 						@change="refreshNotes()"
 					/>
 					<p

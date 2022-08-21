@@ -1,10 +1,27 @@
 <template>
 	<v-card class="ma-2" :color="needsAttention ? 'red-darken-3' : 'accent'">
-		<v-card-title class="d-flex flex-row align-center justify-space-between">
-			{{ note.title }}
-			<v-chip :color="getChipColor(note.noteType)" class="ml-4">
-				{{ note.noteType }}
-			</v-chip>
+		<v-card-title class="d-flex flex-column align-start">
+			<div
+				style="width: 100%"
+				class="d-flex flex-row align-center justify-space-between"
+			>
+				{{ note.title }}
+				<v-chip :color="getChipColor(note.noteType)" class="ml-4">
+					{{ note.noteType }}
+				</v-chip>
+			</div>
+			<v-divider v-if="showMember" />
+			<div v-if="showMember" class="d-flex flex-row align-center">
+				<span class="mr-1">User: </span>
+				<v-avatar
+					v-if="memberProfile.avatarUrl.length > 0"
+					class="mr-1"
+					:size="24"
+				>
+					<v-img :src="memberProfile.avatarUrl" />
+				</v-avatar>
+				<span>{{ memberProfile.username }}</span>
+			</div>
 		</v-card-title>
 		<v-card-text>
 			<div>
@@ -52,6 +69,10 @@ const props = defineProps({
 		type: Object as PropType<APTypes.Note>,
 		required: true,
 	},
+	showMember: {
+		type: Boolean,
+		default: false,
+	},
 });
 const emit = defineEmits(["changed"]);
 
@@ -75,6 +96,13 @@ const needsAttention = computed(
 let creatorProfile = userCache.value[props.note.createdBy];
 if (!creatorProfile) {
 	creatorProfile = {
+		avatarUrl: "",
+		username: "unknown",
+	};
+}
+let memberProfile = userCache.value[props.note.userId];
+if (!memberProfile) {
+	memberProfile = {
 		avatarUrl: "",
 		username: "unknown",
 	};
