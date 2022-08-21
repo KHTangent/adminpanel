@@ -1,5 +1,5 @@
 <template>
-	<v-card class="ma-2">
+	<v-card class="ma-2" :color="needsAttention ? 'red-darken-3' : 'accent'">
 		<v-card-title class="d-flex flex-row align-center justify-space-between">
 			{{ note.title }}
 			<v-chip :color="getChipColor(note.noteType)" class="ml-4">
@@ -66,6 +66,10 @@ const hasExpirity = computed(
 			!props.note.expires ||
 			(props.note.expires as unknown as string).length === 0
 		)
+);
+
+const needsAttention = computed(
+	() => !props.note.resolved && hasExpirity.value && expires.value < new Date()
 );
 
 let creatorProfile = userCache.value[props.note.createdBy];
