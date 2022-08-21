@@ -12,11 +12,17 @@
 		>
 			<v-expansion-panel title="Expired notes" :value="0">
 				<v-expansion-panel-text>
-					<p>
-						Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ducimus
-						tempora ea vel porro inventore facere enim aspernatur velit commodi
-						vero ipsam laboriosam laborum ullam nobis obcaecati, cumque, earum
-						animi? Nisi!
+					<NoteCard
+						v-for="(note, i) in expiredUnresolvedNotes"
+						:key="i"
+						:note="note"
+						@change="refreshNotes()"
+					/>
+					<p
+						v-if="expiredUnresolvedNotes.length === 0"
+						class="text-caption ma-4"
+					>
+						All expired notes have been resolved
 					</p>
 				</v-expansion-panel-text>
 			</v-expansion-panel>
@@ -56,7 +62,7 @@
 						:member="member.profile"
 						@open="viewMember(i)"
 					/>
-					<p v-if="members.length === 0" class="text-caption">
+					<p v-if="members.length === 0" class="text-caption ma-4">
 						No members have been added to this server yet.
 					</p>
 					<MemberDialog
@@ -109,6 +115,18 @@ for (const member of members.value) {
 		username: member.profile.username,
 	};
 }
+
+const { data: allNotes, refresh: refreshNotes } = await useFetch<
+	APTypes.Note[]
+>(`/api/server/${server.id}/note/all`, {
+	headers: useRequestHeaders(["cookie"]),
+});
+const expiredUnresolvedNotes = computed(() =>
+	allNotes.value.filter((e) => {
+		const temp = (e.expires as unknown as string) || "";
+		return !e.resolved && temp.length > 0 && new Date(temp) < new Date();
+	})
+);
 
 const addMemberId = ref("");
 const addMemberError = ref("");
