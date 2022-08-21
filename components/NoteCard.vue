@@ -34,6 +34,11 @@
 				</div>
 			</div>
 		</v-card-text>
+		<v-card-actions v-if="!note.resolved" class="justify-end">
+			<v-btn :disabled="resolving" @click="resolveNote()">
+				{{ resolving ? "Resolving..." : "Mark resolved" }}
+			</v-btn>
+		</v-card-actions>
 	</v-card>
 </template>
 
@@ -48,6 +53,7 @@ const props = defineProps({
 		required: true,
 	},
 });
+const emit = defineEmits(["changed"]);
 
 const userCache = useUserCache();
 
@@ -72,5 +78,19 @@ if (!creatorProfile) {
 
 function getChipColor(type: APTypes.NoteType): string {
 	return getNoteTypeColor(type);
+}
+
+const resolving = ref(false);
+async function resolveNote() {
+	resolving.value = true;
+	await $fetch(
+		`/api/server/${props.note.serverId}/note/resolve/${props.note.noteId}`,
+		{
+			method: "POST",
+		}
+	);
+	emit("changed");
+	props.note.resolved = true;
+	resolving.value = false;
 }
 </script>

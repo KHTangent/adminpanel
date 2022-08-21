@@ -18,7 +18,12 @@
 				<p class="text-caption">User ID: {{ member.profile.id }}</p>
 				<v-divider class="my-2" />
 				<h2 class="text-h4">User notes</h2>
-				<NoteCard v-for="(note, i) in member.notes" :key="i" :note="note" />
+				<NoteCard
+					v-for="(note, i) in member.notes"
+					:key="i"
+					:note="note"
+					@change="refresh()"
+				/>
 				<p class="text-body-1" v-if="member.notes.length === 0">No notes yet</p>
 				<v-divider class="my-2" />
 				<v-expansion-panels>
